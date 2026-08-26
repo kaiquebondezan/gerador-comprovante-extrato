@@ -24,7 +24,8 @@ Se preferir apontar para um Chromium específico (por exemplo, um já instalado 
 ### `POST /comprovante`
 
 Query params:
-- `format` — `pdf` (padrão), `png` ou `both` (retorna JSON com os dois em base64).
+- `format` — `pdf` (padrão), `png`, `both` (retorna JSON com os dois em base64) ou `url` (gera o arquivo, guarda temporariamente e retorna `{ "url": "..." }` com o link para baixá-lo).
+- `tipo` — só usado com `format=url`: `pdf` (padrão) ou `png`. Define qual dos dois formatos é gerado e disponibilizado no link.
 
 Body (JSON):
 
@@ -84,6 +85,16 @@ curl -X POST "http://localhost:3000/comprovante?format=both" \
   -d @exemplo.json
 ```
 
+Link para o arquivo (em vez do binário/base64 direto):
+```bash
+curl -X POST "http://localhost:3000/comprovante?format=url&tipo=png" \
+  -H "Content-Type: application/json" \
+  -d @exemplo.json
+```
+Resposta: `{ "url": "http://localhost:3000/arquivos/<id>.png" }`. Basta abrir/baixar essa URL (ela também aceita ser carregada direto numa `<img>` ou usada como link de download).
+
+> ⚠️ O link de `format=url` só funciona enquanto a instância estiver **acordada**: o arquivo fica salvo numa pasta local sem persistência (`generated/`), então some a cada sono, reinício ou novo deploy. Não é uma opção para guardar comprovantes por muito tempo — só para servir o resultado logo após ser gerado, dentro da mesma sessão de uso.
+
 ## Trocar o símbolo
 
 Troque o arquivo `public/default-logo.png` pelo seu PNG (fica sempre como logo padrão), ou envie `logo_base64` em cada request para usar um símbolo diferente por chamada.
@@ -95,11 +106,18 @@ Gera o extrato fictício de uma das 4 contas cadastradas em `data/extratos.json`
 Query params:
 - `contaId` (obrigatório): `1`, `2`, `3` ou `4`. Se não existir, responde `404`.
 - `inicio` / `fim` (opcionais): datas no formato `AAAA-MM-DD`, inclusivas. Se omitidas, o extrato cobre toda a história disponível da conta (da movimentação mais antiga à mais recente).
-- `format` — `pdf` (padrão), `png` ou `both`, igual ao `/comprovante`.
+- `format` — `pdf` (padrão), `png`, `both` ou `url`, igual ao `/comprovante`.
+- `tipo` — só usado com `format=url`: `pdf` (padrão) ou `png`.
 
 ```bash
 curl "http://localhost:3000/extrato?contaId=4&inicio=2026-08-01&fim=2026-08-31&format=pdf" -o extrato.pdf
 ```
+
+Link para o arquivo:
+```bash
+curl "http://localhost:3000/extrato?contaId=4&format=url&tipo=png"
+```
+Resposta: `{ "url": "http://localhost:3000/arquivos/<id>.png" }` — mesmo aviso de disponibilidade do `/comprovante`: só existe enquanto a instância estiver acordada.
 
 O comprovante calcula automaticamente, a partir das movimentações do período: total de entradas, total de saídas e o saldo do período (entradas − saídas). O "saldo atual" exibido é o valor de `saldo` cadastrado na conta — um retrato do momento, não recalculado por período.
 
@@ -116,6 +134,7 @@ Para adicionar/editar contas fictícias, edite `data/extratos.json` diretamente 
 - `lib/statement.js` — filtro de movimentações por período e cálculo de totais do extrato.
 - `lib/render.js` — monta o HTML do comprovante e do extrato a partir dos templates + dados.
 - `lib/browser.js` — gerencia a instância do Chromium headless (Playwright) e a geração de PDF/PNG.
+- `lib/storage.js` — salva os arquivos gerados com `format=url` em `generated/` (pasta sem persistência, apagada a cada sono/reinício/redeploy) e monta a URL pública de download.
 - `routes/comprovante.js` — rota `POST /comprovante`, com a validação de entrada.
 - `routes/extrato.js` — rota `GET /extrato`, com a validação de conta/período.
 - `routes/health.js` — rota `GET /health`.
@@ -124,3 +143,4 @@ Para adicionar/editar contas fictícias, edite `data/extratos.json` diretamente 
 - `templates/statement.html` — template HTML/CSS do extrato.
 - `data/extratos.json` — dados fictícios das 4 contas (saldo, titular e movimentações).
 - `public/default-logo.png` — símbolo padrão (placeholder genérico).
+- `generated/` — criada automaticamente em tempo de execução para guardar os arquivos de `format=url`. Não é versionada (está no `.gitignore`/`.dockerignore`) e não tem persistência entre deploys/reinícios.

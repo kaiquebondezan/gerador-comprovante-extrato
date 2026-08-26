@@ -1,11 +1,15 @@
 const { Router } = require("express");
 const { renderHtml } = require("../lib/render");
 const { renderToBuffer } = require("../lib/browser");
+const { saveGeneratedFile, buildFileUrl } = require("../lib/storage");
 
 const router = Router();
 
-const VALID_FORMATS = ["pdf", "png", "both"];
+const VALID_FORMATS = ["pdf", "png", "both", "url"];
+const VALID_TIPOS = ["pdf", "png"];
 
+// Validação mínima: só o essencial para o comprovante fazer sentido.
+// Retorna uma lista de mensagens de erro (vazia se tudo estiver ok).
 function validateBody(body) {
   const errors = [];
 
@@ -59,6 +63,18 @@ router.post("/comprovante", async (req, res) => {
         pdf_base64: pdfBuf.toString("base64"),
         png_base64: pngBuf.toString("base64"),
       });
+    }
+
+    if (format === "url") {
+      const tipo = String(req.query.tipo || "pdf").toLowerCase();
+      if (!VALID_TIPOS.includes(tipo)) {
+        return res.status(400).json({
+          error: `'tipo' deve ser um de: ${VALID_TIPOS.join(", ")}`,
+        });
+      }
+      const buf = await renderToBuffer(html, tipo);
+      const filename = saveGeneratedFile(buf, tipo);
+      return res.json({ url: buildFileUrl(req, filename) });
     }
 
     const buf = await renderToBuffer(html, format);
