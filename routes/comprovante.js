@@ -64,7 +64,7 @@ router.post("/comprovante", async (req, res) => {
     }
 
     if (format === "url") {
-      const tipo = String(req.query.tipo || "pdf").toLowerCase();
+      const tipo = String(req.query.tipo || "png").toLowerCase();
       if (!VALID_TIPOS.includes(tipo)) {
         return res.status(400).json({
           error: `'tipo' deve ser um de: ${VALID_TIPOS.join(", ")}`,

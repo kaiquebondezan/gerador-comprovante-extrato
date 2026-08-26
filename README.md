@@ -25,7 +25,7 @@ Se preferir apontar para um Chromium específico (por exemplo, um já instalado 
 
 Query params:
 - `format` — `pdf` (padrão), `png`, `both` (retorna JSON com os dois em base64) ou `url` (gera o arquivo, guarda temporariamente e retorna `{ "url": "..." }` com o link para baixá-lo).
-- `tipo` — só usado com `format=url`: `pdf` (padrão) ou `png`. Define qual dos dois formatos é gerado e disponibilizado no link.
+- `tipo` — só usado com `format=url`: `png` (padrão) ou `pdf`. Define qual dos dois formatos é gerado e disponibilizado no link.
 
 Body (JSON):
 
@@ -107,7 +107,7 @@ Query params:
 - `contaId` (obrigatório): `1`, `2`, `3` ou `4`. Se não existir, responde `404`.
 - `inicio` / `fim` (opcionais): datas no formato `AAAA-MM-DD`, inclusivas. Se omitidas, o extrato cobre toda a história disponível da conta (da movimentação mais antiga à mais recente).
 - `format` — `pdf` (padrão), `png`, `both` ou `url`, igual ao `/comprovante`.
-- `tipo` — só usado com `format=url`: `pdf` (padrão) ou `png`.
+- `tipo` — só usado com `format=url`: `png` (padrão) ou `pdf`.
 
 ```bash
 curl "http://localhost:3000/extrato?contaId=4&inicio=2026-08-01&fim=2026-08-31&format=pdf" -o extrato.pdf
