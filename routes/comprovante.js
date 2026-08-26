@@ -8,8 +8,6 @@ const router = Router();
 const VALID_FORMATS = ["pdf", "png", "both", "url"];
 const VALID_TIPOS = ["pdf", "png"];
 
-// Validação mínima: só o essencial para o comprovante fazer sentido.
-// Retorna uma lista de mensagens de erro (vazia se tudo estiver ok).
 function validateBody(body) {
   const errors = [];
 

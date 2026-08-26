@@ -16,11 +16,8 @@ const VALID_FORMATS = ["pdf", "png", "both", "url"];
 const VALID_TIPOS = ["pdf", "png"];
 const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
 
-// Carregado uma vez na subida do processo — são só 4 contas fictícias fixas.
 const CONTAS = JSON.parse(fs.readFileSync(EXTRATOS_DATA_PATH, "utf8"));
 
-// Sem `inicio`/`fim` no request, o extrato cobre toda a história disponível
-// da conta (da movimentação mais antiga à mais recente).
 function periodoPadrao(movimentacoes) {
   const dias = movimentacoes.map((mov) => dateOnly(mov.data)).sort();
   return { inicio: dias[0], fim: dias[dias.length - 1] };
