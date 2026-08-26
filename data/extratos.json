@@ -1,0 +1,78 @@
+{
+  "1": {
+    "contaId": 1,
+    "titular": "Mariana Oliveira",
+    "agencia": "0001",
+    "conta": "12345-6",
+    "saldo": 5230.8,
+    "movimentacoes": [
+      { "data": "2026-08-24T14:35:00-03:00", "descricao": "PIX recebido - Empresa Alpha Ltda", "tipo": "PIX", "valor": 1250 },
+      { "data": "2026-08-23T09:12:00-03:00", "descricao": "Supermercado Central", "tipo": "COMPRA", "valor": -286.45 },
+      { "data": "2026-08-22T18:20:00-03:00", "descricao": "PIX enviado - Carlos Mendes", "tipo": "PIX", "valor": -150 },
+      { "data": "2026-08-21T10:05:00-03:00", "descricao": "Pagamento boleto - Energia Elétrica", "tipo": "BOLETO", "valor": -238.7 },
+      { "data": "2026-08-20T08:30:00-03:00", "descricao": "Crédito de salário", "tipo": "CRÉDITO", "valor": 4850 },
+      { "data": "2026-08-18T13:45:00-03:00", "descricao": "Restaurante Sabor & Cia", "tipo": "DÉBITO", "valor": -89.9 },
+      { "data": "2026-08-17T16:10:00-03:00", "descricao": "Farmácia Saúde", "tipo": "COMPRA", "valor": -74.35 },
+      { "data": "2026-08-15T11:25:00-03:00", "descricao": "Transferência recebida", "tipo": "TED", "valor": 600 },
+      { "data": "2026-08-14T19:40:00-03:00", "descricao": "Posto Avenida", "tipo": "DÉBITO", "valor": -200 },
+      { "data": "2026-08-12T07:50:00-03:00", "descricao": "Pagamento internet", "tipo": "BOLETO", "valor": -119.9 }
+    ]
+  },
+  "2": {
+    "contaId": 2,
+    "titular": "Rafael Santos",
+    "agencia": "0001",
+    "conta": "23456-7",
+    "saldo": 12850.45,
+    "movimentacoes": [
+      { "data": "2026-08-24T15:15:00-03:00", "descricao": "PIX recebido - Consultoria Beta", "tipo": "PIX", "valor": 3200 },
+      { "data": "2026-08-23T12:30:00-03:00", "descricao": "Restaurante Executivo", "tipo": "DÉBITO", "valor": -142.8 },
+      { "data": "2026-08-22T10:00:00-03:00", "descricao": "Aplicação financeira", "tipo": "DÉBITO", "valor": -2000 },
+      { "data": "2026-08-21T17:42:00-03:00", "descricao": "PIX enviado - Ana Martins", "tipo": "PIX", "valor": -450 },
+      { "data": "2026-08-20T08:15:00-03:00", "descricao": "Crédito de salário", "tipo": "CRÉDITO", "valor": 8900 },
+      { "data": "2026-08-19T14:50:00-03:00", "descricao": "Pagamento condomínio", "tipo": "BOLETO", "valor": -785 },
+      { "data": "2026-08-18T18:30:00-03:00", "descricao": "Supermercado Premium", "tipo": "COMPRA", "valor": -524.6 },
+      { "data": "2026-08-16T09:20:00-03:00", "descricao": "Transferência recebida - Reembolso", "tipo": "TED", "valor": 980 },
+      { "data": "2026-08-14T20:05:00-03:00", "descricao": "Posto Rodovia", "tipo": "DÉBITO", "valor": -320 },
+      { "data": "2026-08-12T11:35:00-03:00", "descricao": "Pagamento plano de saúde", "tipo": "BOLETO", "valor": -690.5 }
+    ]
+  },
+  "3": {
+    "contaId": 3,
+    "titular": "Camila Ferreira",
+    "agencia": "0002",
+    "conta": "34567-8",
+    "saldo": 2860.3,
+    "movimentacoes": [
+      { "data": "2026-08-24T08:45:00-03:00", "descricao": "PIX recebido - Juliana Costa", "tipo": "PIX", "valor": 380 },
+      { "data": "2026-08-23T17:20:00-03:00", "descricao": "Mercado Bairro", "tipo": "COMPRA", "valor": -198.75 },
+      { "data": "2026-08-22T13:05:00-03:00", "descricao": "Pagamento telefone", "tipo": "BOLETO", "valor": -89.9 },
+      { "data": "2026-08-21T19:10:00-03:00", "descricao": "PIX enviado - Roberto Lima", "tipo": "PIX", "valor": -250 },
+      { "data": "2026-08-20T08:10:00-03:00", "descricao": "Crédito de salário", "tipo": "CRÉDITO", "valor": 3750 },
+      { "data": "2026-08-18T12:35:00-03:00", "descricao": "Restaurante Bom Sabor", "tipo": "DÉBITO", "valor": -65.4 },
+      { "data": "2026-08-17T09:15:00-03:00", "descricao": "Farmácia Popular", "tipo": "COMPRA", "valor": -132.8 },
+      { "data": "2026-08-15T16:25:00-03:00", "descricao": "Transferência enviada", "tipo": "TED", "valor": -700 },
+      { "data": "2026-08-14T18:50:00-03:00", "descricao": "Posto Centro", "tipo": "DÉBITO", "valor": -180 },
+      { "data": "2026-08-11T10:40:00-03:00", "descricao": "Estorno de compra", "tipo": "CRÉDITO", "valor": 94.5 }
+    ]
+  },
+  "4": {
+    "contaId": 4,
+    "titular": "Lucas Almeida",
+    "agencia": "0002",
+    "conta": "45678-9",
+    "saldo": 8750.9,
+    "movimentacoes": [
+      { "data": "2026-08-24T11:05:00-03:00", "descricao": "PIX recebido - Serviços Gamma", "tipo": "PIX", "valor": 2100 },
+      { "data": "2026-08-23T16:40:00-03:00", "descricao": "Loja de Informática", "tipo": "COMPRA", "valor": -1249.9 },
+      { "data": "2026-08-22T09:35:00-03:00", "descricao": "Pagamento energia elétrica", "tipo": "BOLETO", "valor": -310.25 },
+      { "data": "2026-08-21T14:15:00-03:00", "descricao": "PIX enviado - Fernanda Rocha", "tipo": "PIX", "valor": -520 },
+      { "data": "2026-08-20T08:05:00-03:00", "descricao": "Crédito de salário", "tipo": "CRÉDITO", "valor": 7200 },
+      { "data": "2026-08-18T19:25:00-03:00", "descricao": "Supermercado Família", "tipo": "COMPRA", "valor": -438.7 },
+      { "data": "2026-08-17T12:00:00-03:00", "descricao": "Restaurante Grill", "tipo": "DÉBITO", "valor": -118.6 },
+      { "data": "2026-08-15T10:45:00-03:00", "descricao": "Transferência recebida", "tipo": "TED", "valor": 1350 },
+      { "data": "2026-08-13T17:30:00-03:00", "descricao": "Pagamento seguro automóvel", "tipo": "BOLETO", "valor": -485.9 },
+      { "data": "2026-08-11T20:15:00-03:00", "descricao": "Posto Norte", "tipo": "DÉBITO", "valor": -275 }
+    ]
+  }
+}

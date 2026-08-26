@@ -1,0 +1,15 @@
+{
+  "titulo": "Pix enviado",
+  "valor": 80.00,
+  "protocolo": "202608261234567",
+  "recebedor": {
+    "nome": "Loja Exemplo LTDA",
+    "cpf_cnpj": "23010551000131",
+    "instituicao": "Banco Exemplo S.A."
+  },
+  "pagador": {
+    "nome": "FULANO DE TAL",
+    "cpf_cnpj": "12345678909",
+    "instituicao": "ColmeIA Bank"
+  }
+}

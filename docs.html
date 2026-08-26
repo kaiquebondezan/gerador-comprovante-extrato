@@ -1,0 +1,760 @@
+<title>ColmeIA Bank API</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+<style>
+  /* ============ Tokens ============ */
+  :root {
+    --ink: #21231f;
+    --ink-soft: #565a4f;
+    --paper: #f2f3ef;
+    --panel: #fbfbf9;
+    --comb: #dcdccf;
+    --comb-strong: #c7c7b6;
+    --honey: #a5680f;
+    --honey-strong: #7c4e0b;
+    --honey-tint: #f4e6c9;
+    --ok: #2f6b45;
+    --ok-tint: #dfeee2;
+    --warn: #a13a2b;
+    --warn-tint: #f6ded8;
+    --code-bg: #292a24;
+    --code-ink: #e9e8df;
+    --code-comment: #96998c;
+    --shadow: 0 1px 2px rgba(33,35,31,0.06), 0 8px 24px rgba(33,35,31,0.05);
+    --radius: 10px;
+    --sidebar-w: 272px;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ink: #ebe9e0;
+      --ink-soft: #a9ac9e;
+      --paper: #1a1c18;
+      --panel: #212319;
+      --comb: #34362c;
+      --comb-strong: #454736;
+      --honey: #e0a53e;
+      --honey-strong: #f2c069;
+      --honey-tint: #3a2e14;
+      --ok: #7fc396;
+      --ok-tint: #1d2a1f;
+      --warn: #e2705a;
+      --warn-tint: #2e1c17;
+      --code-bg: #14150f;
+      --code-ink: #e5e4da;
+      --code-comment: #7d8071;
+      --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 8px 24px rgba(0,0,0,0.35);
+    }
+  }
+
+  :root[data-theme="dark"] {
+    --ink: #ebe9e0;
+    --ink-soft: #a9ac9e;
+    --paper: #1a1c18;
+    --panel: #212319;
+    --comb: #34362c;
+    --comb-strong: #454736;
+    --honey: #e0a53e;
+    --honey-strong: #f2c069;
+    --honey-tint: #3a2e14;
+    --ok: #7fc396;
+    --ok-tint: #1d2a1f;
+    --warn: #e2705a;
+    --warn-tint: #2e1c17;
+    --code-bg: #14150f;
+    --code-ink: #e5e4da;
+    --code-comment: #7d8071;
+    --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 8px 24px rgba(0,0,0,0.35);
+  }
+
+  /* ============ Base ============ */
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: "IBM Plex Sans", -apple-system, "Segoe UI", sans-serif;
+    font-size: 16px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  h1, h2, h3, h4 { font-weight: 600; text-wrap: balance; margin: 0; }
+  p { margin: 0 0 1em; color: var(--ink); }
+  a { color: var(--honey-strong); }
+  code, pre, kbd { font-family: "IBM Plex Mono", ui-monospace, monospace; }
+  ::selection { background: var(--honey-tint); }
+
+  .eyebrow {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+  }
+
+  /* ============ Shell layout ============ */
+  .shell {
+    max-width: 1240px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: var(--sidebar-w) minmax(0, 1fr);
+  }
+
+  /* ---- Sidebar ---- */
+  .sidebar {
+    position: sticky;
+    top: 0;
+    align-self: start;
+    height: 100vh;
+    overflow-y: auto;
+    padding: 28px 20px 40px;
+    border-right: 1px solid var(--comb);
+    scrollbar-width: thin;
+  }
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 26px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid var(--comb);
+  }
+  .brand svg { flex: none; }
+  .brand-text { display: flex; flex-direction: column; line-height: 1.25; }
+  .brand-name { font-weight: 700; font-size: 15px; }
+  .brand-sub { font-size: 12px; color: var(--ink-soft); }
+
+  .nav-group { margin-bottom: 22px; }
+  .nav-group .eyebrow { display: block; margin: 0 0 8px 10px; }
+  .nav-group ul { list-style: none; margin: 0; padding: 0; }
+  .nav-group a {
+    display: block;
+    padding: 6px 10px;
+    border-radius: 7px;
+    font-size: 13.5px;
+    color: var(--ink-soft);
+    text-decoration: none;
+    transition: background 0.12s ease, color 0.12s ease;
+  }
+  .nav-group a:hover { background: var(--panel); color: var(--ink); }
+  .nav-group a.method-tag::before {
+    content: attr(data-method);
+    display: inline-block;
+    width: 34px;
+    margin-right: 8px;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--honey-strong);
+  }
+
+  /* ---- Main content ---- */
+  .content { padding: 44px clamp(20px, 4vw, 64px) 100px; min-width: 0; }
+  .content-inner { max-width: 700px; }
+
+  header.page-head { max-width: 760px; margin-bottom: 48px; }
+  .simulation-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 11.5px;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    color: var(--warn);
+    background: var(--warn-tint);
+    border: 1px solid color-mix(in srgb, var(--warn) 35%, transparent);
+    border-radius: 999px;
+    padding: 5px 12px 5px 10px;
+    margin-bottom: 18px;
+  }
+  .page-head h1 { font-size: 34px; margin-bottom: 10px; }
+  .page-head .lede { font-size: 16.5px; color: var(--ink-soft); max-width: 58ch; }
+
+  section { max-width: 700px; margin-bottom: 56px; scroll-margin-top: 24px; }
+  section h2 {
+    font-size: 22px;
+    padding-bottom: 12px;
+    margin-bottom: 18px;
+    border-bottom: 1px solid var(--comb);
+  }
+  section h3 { font-size: 16px; margin: 26px 0 10px; }
+  section > p:last-child { margin-bottom: 0; }
+
+  /* ---- Pipeline diagram ---- */
+  .pipeline {
+    display: flex;
+    align-items: stretch;
+    gap: 0;
+    margin: 20px 0 8px;
+    overflow-x: auto;
+    padding-bottom: 6px;
+  }
+  .pipe-step {
+    flex: 1 0 128px;
+    background: var(--panel);
+    border: 1px solid var(--comb);
+    border-radius: var(--radius);
+    padding: 14px 14px 16px;
+  }
+  .pipe-step .pipe-num {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 11px;
+    color: var(--honey-strong);
+    margin-bottom: 6px;
+  }
+  .pipe-step h4 { font-size: 13.5px; margin-bottom: 4px; }
+  .pipe-step p { font-size: 12.5px; color: var(--ink-soft); margin: 0; }
+  .pipe-arrow {
+    flex: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    color: var(--comb-strong);
+  }
+
+  /* ---- Callouts ---- */
+  .callout {
+    display: flex;
+    gap: 12px;
+    border-radius: var(--radius);
+    padding: 14px 16px;
+    margin: 18px 0;
+    border: 1px solid transparent;
+  }
+  .callout .hex-mark { flex: none; margin-top: 2px; }
+  .callout p { margin: 0; font-size: 14.5px; }
+  .callout.warn { background: var(--warn-tint); border-color: color-mix(in srgb, var(--warn) 30%, transparent); }
+  .callout.warn .hex-mark { color: var(--warn); }
+  .callout.note { background: var(--honey-tint); border-color: color-mix(in srgb, var(--honey) 30%, transparent); }
+  .callout.note .hex-mark { color: var(--honey-strong); }
+
+  /* ---- Endpoint header ---- */
+  .endpoint-head {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 4px;
+  }
+  .method {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 3px 9px;
+    border-radius: 6px;
+    letter-spacing: 0.02em;
+  }
+  .method.get { background: var(--ok-tint); color: var(--ok); }
+  .method.post { background: var(--honey-tint); color: var(--honey-strong); }
+  .endpoint-path {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 15px;
+    font-weight: 500;
+  }
+  .endpoint-desc { color: var(--ink-soft); font-size: 14px; margin-bottom: 18px; }
+
+  /* ---- Tables ---- */
+  .table-wrap { overflow-x: auto; margin: 14px 0 22px; }
+  table { border-collapse: collapse; width: 100%; font-size: 13.5px; }
+  th, td { text-align: left; padding: 9px 14px 9px 0; border-bottom: 1px solid var(--comb); vertical-align: top; }
+  th { font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--ink-soft); font-weight: 600; }
+  td.field-name { font-family: "IBM Plex Mono", monospace; font-size: 13px; white-space: nowrap; }
+  td.field-type { font-family: "IBM Plex Mono", monospace; font-size: 12.5px; color: var(--ink-soft); white-space: nowrap; }
+  .req-flag { font-size: 11px; font-weight: 600; padding: 2px 7px; border-radius: 5px; white-space: nowrap; }
+  .req-flag.required { background: var(--warn-tint); color: var(--warn); }
+  .req-flag.optional { background: var(--panel); color: var(--ink-soft); border: 1px solid var(--comb); }
+  .req-flag.auto { background: var(--honey-tint); color: var(--honey-strong); }
+
+  /* ---- Auto-field list (hex bullets = "gerado pela colmeia") ---- */
+  ul.hex-list { list-style: none; margin: 14px 0; padding: 0; }
+  ul.hex-list li {
+    position: relative;
+    padding-left: 26px;
+    margin-bottom: 10px;
+    font-size: 14.5px;
+  }
+  ul.hex-list li::before {
+    content: "⬡";
+    position: absolute;
+    left: 0;
+    top: 0.05em;
+    color: var(--honey);
+    font-size: 14px;
+  }
+  ul.hex-list code { font-size: 13px; }
+  ul.hex-list .hint { display: block; color: var(--ink-soft); font-size: 13px; margin-top: 2px; }
+
+  /* ---- Code blocks ---- */
+  .code-block {
+    background: var(--code-bg);
+    color: var(--code-ink);
+    border-radius: var(--radius);
+    overflow: hidden;
+    margin: 14px 0 22px;
+    box-shadow: var(--shadow);
+  }
+  .code-block .code-label {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--code-comment);
+    padding: 9px 16px 0;
+  }
+  .code-block pre {
+    margin: 0;
+    padding: 10px 16px 16px;
+    overflow-x: auto;
+    font-size: 13px;
+    line-height: 1.65;
+  }
+  .code-block code { color: var(--code-ink); }
+  .tok-key { color: #e0a53e; }
+  .tok-str { color: #9fcf8f; }
+  .tok-num { color: #7ab3e0; }
+  .tok-comment { color: var(--code-comment); font-style: italic; }
+  .tok-muted { color: var(--code-comment); }
+
+  /* ---- File tree ---- */
+  .tree {
+    background: var(--panel);
+    border: 1px solid var(--comb);
+    border-radius: var(--radius);
+    padding: 16px 20px;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 13px;
+    line-height: 1.9;
+  }
+  .tree .fname { color: var(--ink); }
+  .tree .fdesc { color: var(--ink-soft); }
+  .tree .dir { color: var(--honey-strong); font-weight: 600; }
+
+  hr.div { border: none; border-top: 1px solid var(--comb); margin: 40px 0; }
+
+  footer.page-foot {
+    max-width: 700px;
+    font-size: 12.5px;
+    color: var(--ink-soft);
+    padding-top: 18px;
+    border-top: 1px solid var(--comb);
+  }
+
+  /* ---- Responsive ---- */
+  @media (max-width: 880px) {
+    .shell { grid-template-columns: 1fr; }
+    .sidebar {
+      position: static;
+      height: auto;
+      border-right: none;
+      border-bottom: 1px solid var(--comb);
+      padding: 18px 20px;
+    }
+    .brand { margin-bottom: 16px; padding-bottom: 14px; }
+    .nav-groups { display: flex; gap: 22px; overflow-x: auto; }
+    .nav-group { margin-bottom: 0; flex: none; }
+    .content { padding: 32px 20px 80px; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    * { transition: none !important; }
+  }
+</style>
+
+<div class="shell">
+  <aside class="sidebar">
+    <div class="brand">
+      <svg width="30" height="30" viewBox="0 0 30 30" fill="none">
+        <path d="M15 1.5 L27 8.25 V21.75 L15 28.5 L3 21.75 V8.25 Z" stroke="var(--honey)" stroke-width="1.6"/>
+        <path d="M15 8 L21 11.5 V18.5 L15 22 L9 18.5 V11.5 Z" fill="var(--honey)" opacity="0.18"/>
+        <circle cx="15" cy="15" r="2.6" fill="var(--honey)"/>
+      </svg>
+      <div class="brand-text">
+        <span class="brand-name">ColmeIA Bank</span>
+        <span class="brand-sub">API docs · comprovante-api</span>
+      </div>
+    </div>
+
+    <div class="nav-groups">
+      <div class="nav-group">
+        <span class="eyebrow">Introdução</span>
+        <ul>
+          <li><a href="#visao-geral">Visão geral</a></li>
+          <li><a href="#como-funciona">Como funciona</a></li>
+        </ul>
+      </div>
+      <div class="nav-group">
+        <span class="eyebrow">Primeiros passos</span>
+        <ul>
+          <li><a href="#como-rodar">Instalação &amp; scripts</a></li>
+          <li><a href="#variaveis-de-ambiente">Variáveis de ambiente</a></li>
+        </ul>
+      </div>
+      <div class="nav-group">
+        <span class="eyebrow">Referência da API</span>
+        <ul>
+          <li><a href="#health" class="method-tag" data-method="GET">/health</a></li>
+          <li><a href="#comprovante" class="method-tag" data-method="POST">/comprovante</a></li>
+          <li><a href="#corpo-da-requisicao">Corpo da requisição</a></li>
+          <li><a href="#campos-automaticos">Campos automáticos</a></li>
+          <li><a href="#erros">Erros de validação</a></li>
+          <li><a href="#respostas">Formatos de resposta</a></li>
+        </ul>
+      </div>
+      <div class="nav-group">
+        <span class="eyebrow">Projeto</span>
+        <ul>
+          <li><a href="#estrutura">Estrutura de arquivos</a></li>
+          <li><a href="#simulacao">Aviso de simulação</a></li>
+        </ul>
+      </div>
+    </div>
+  </aside>
+
+  <main class="content">
+    <div class="content-inner">
+
+      <header class="page-head">
+        <span class="simulation-badge">⬡ apenas simulação — sem valor bancário real</span>
+        <h1>ColmeIA Bank API</h1>
+        <p class="lede">Uma API HTTP simples, sem autenticação, que gera comprovantes fictícios de transferência (Pix) em PDF e/ou PNG. Construída para simular o bot de um banco em ambiente de teste — nunca para representar uma instituição real.</p>
+      </header>
+
+      <section id="visao-geral">
+        <h2>Visão geral</h2>
+        <p>A API expõe um único endpoint de negócio, <code>POST /comprovante</code>, que recebe os dados de uma transferência em JSON e devolve um comprovante pronto — em PDF, em PNG, ou os dois. Não existe login, chave de API ou sessão: qualquer requisição bem formada é atendida.</p>
+        <p>Por baixo, é um servidor <strong>Node.js + Express</strong> que renderiza um template HTML/CSS e usa o <strong>Playwright</strong> para controlar um Chromium headless, que imprime esse HTML como PDF ou tira um screenshot dele como PNG. Não há banco de dados: cada requisição é independente e nada fica salvo.</p>
+      </section>
+
+      <section id="como-funciona">
+        <h2>Como funciona</h2>
+        <p>Do request até o arquivo final, o caminho é sempre o mesmo pipeline:</p>
+
+        <div class="pipeline">
+          <div class="pipe-step">
+            <div class="pipe-num">01</div>
+            <h4>Request chega</h4>
+            <p>JSON com valor, recebedor e pagador em <code>POST /comprovante</code>.</p>
+          </div>
+          <div class="pipe-arrow">
+            <svg width="16" height="16" viewBox="0 0 16 16"><path d="M2 8h11M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div class="pipe-step">
+            <div class="pipe-num">02</div>
+            <h4>Validação</h4>
+            <p>Confere valor, recebedor.nome e pagador.nome. Falta algo → 400.</p>
+          </div>
+          <div class="pipe-arrow">
+            <svg width="16" height="16" viewBox="0 0 16 16"><path d="M2 8h11M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div class="pipe-step">
+            <div class="pipe-num">03</div>
+            <h4>Template preenchido</h4>
+            <p>Dados + data/hora/ID/protocolo automáticos entram no HTML do comprovante.</p>
+          </div>
+          <div class="pipe-arrow">
+            <svg width="16" height="16" viewBox="0 0 16 16"><path d="M2 8h11M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div class="pipe-step">
+            <div class="pipe-num">04</div>
+            <h4>Chromium headless</h4>
+            <p>Playwright abre o HTML numa página invisível e a renderiza.</p>
+          </div>
+          <div class="pipe-arrow">
+            <svg width="16" height="16" viewBox="0 0 16 16"><path d="M2 8h11M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div class="pipe-step">
+            <div class="pipe-num">05</div>
+            <h4>PDF / PNG</h4>
+            <p><code>page.pdf()</code> ou <code>elemento.screenshot()</code> viram a resposta.</p>
+          </div>
+        </div>
+
+        <h3>Por que um navegador headless para gerar PDF?</h3>
+        <p>Em vez de desenhar o comprovante programaticamente (linha a linha, como bibliotecas de PDF tradicionais fazem), o projeto escreve o layout uma vez em HTML/CSS — a mesma linguagem usada para qualquer página web — e deixa o motor de renderização do Chromium cuidar de tipografia, espaçamento e alinhamento. Isso torna o design tão fácil de ajustar quanto editar um site, com o mesmo resultado visual em PDF e em PNG.</p>
+
+        <div class="callout note">
+          <span class="hex-mark">⬡</span>
+          <p>O Chromium é iniciado uma vez (na primeira requisição) e reaproveitado nas seguintes — só uma nova aba é aberta por requisição. Isso evita o custo de abrir um navegador inteiro a cada chamada.</p>
+        </div>
+      </section>
+
+      <section id="como-rodar">
+        <h2>Instalação &amp; scripts</h2>
+        <p>Requer apenas Node.js instalado. Na pasta do projeto:</p>
+
+        <div class="code-block">
+          <div class="code-label">bash</div>
+          <pre><code>npm install
+npm start</code></pre>
+        </div>
+
+        <p><code>npm start</code> confere se o Chromium do Playwright já está instalado e, se não estiver, baixa sozinho antes de subir o servidor — não é preciso rodar nenhum comando de instalação do navegador manualmente.</p>
+
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Script</th><th>O que faz</th></tr></thead>
+            <tbody>
+              <tr><td class="field-name">npm start</td><td>Garante o Chromium instalado e sobe o servidor uma vez.</td></tr>
+              <tr><td class="field-name">npm run dev</td><td>Igual ao start, mas reinicia sozinho a cada arquivo salvo (nodemon).</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section id="variaveis-de-ambiente">
+        <h2>Variáveis de ambiente</h2>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Variável</th><th>Padrão</th><th>Descrição</th></tr></thead>
+            <tbody>
+              <tr>
+                <td class="field-name">PORT</td>
+                <td class="field-type">3000</td>
+                <td>Porta em que o servidor HTTP escuta.</td>
+              </tr>
+              <tr>
+                <td class="field-name">CHROMIUM_PATH</td>
+                <td class="field-type">—</td>
+                <td>Caminho de um executável de Chromium específico. Se não definida, o Playwright usa o Chromium que ele mesmo baixou.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <hr class="div">
+
+      <section id="health">
+        <div class="endpoint-head">
+          <span class="method get">GET</span>
+          <span class="endpoint-path">/health</span>
+        </div>
+        <p class="endpoint-desc">Checagem simples de que o servidor está de pé.</p>
+
+        <div class="code-block">
+          <div class="code-label">response 200</div>
+          <pre><code>{ <span class="tok-key">"ok"</span>: <span class="tok-num">true</span> }</code></pre>
+        </div>
+      </section>
+
+      <section id="comprovante">
+        <div class="endpoint-head">
+          <span class="method post">POST</span>
+          <span class="endpoint-path">/comprovante</span>
+        </div>
+        <p class="endpoint-desc">Gera um comprovante fictício a partir dos dados da transferência.</p>
+
+        <h3>Query params</h3>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Param</th><th>Valores</th><th>Descrição</th></tr></thead>
+            <tbody>
+              <tr>
+                <td class="field-name">format</td>
+                <td class="field-type">pdf · png · both</td>
+                <td>Formato de saída. Padrão: <code>pdf</code>. Com <code>both</code>, a resposta é um JSON com os dois arquivos em base64.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>Exemplo — PDF</h3>
+        <div class="code-block">
+          <div class="code-label">bash</div>
+          <pre><code>curl -X POST <span class="tok-str">"http://localhost:3000/comprovante?format=pdf"</span> \
+  -H <span class="tok-str">"Content-Type: application/json"</span> \
+  -d <span class="tok-str">@exemplo.json</span> -o comprovante.pdf</code></pre>
+        </div>
+
+        <h3>Exemplo — os dois formatos</h3>
+        <div class="code-block">
+          <div class="code-label">bash</div>
+          <pre><code>curl -X POST <span class="tok-str">"http://localhost:3000/comprovante?format=both"</span> \
+  -H <span class="tok-str">"Content-Type: application/json"</span> \
+  -d <span class="tok-str">@exemplo.json</span></code></pre>
+        </div>
+        <div class="code-block">
+          <div class="code-label">response 200 (format=both)</div>
+          <pre><code>{
+  <span class="tok-key">"pdf_base64"</span>: <span class="tok-str">"JVBERi0xLjQK..."</span>,
+  <span class="tok-key">"png_base64"</span>: <span class="tok-str">"iVBORw0KGgo..."</span>
+}</code></pre>
+        </div>
+      </section>
+
+      <section id="corpo-da-requisicao">
+        <h2>Corpo da requisição</h2>
+        <p>Todos os campos abaixo são lidos do JSON enviado no <code>POST /comprovante</code>.</p>
+
+        <div class="code-block">
+          <div class="code-label">json</div>
+          <pre><code>{
+  <span class="tok-key">"titulo"</span>: <span class="tok-str">"Pix enviado"</span>,
+  <span class="tok-key">"valor"</span>: <span class="tok-num">80.00</span>,
+  <span class="tok-key">"protocolo"</span>: <span class="tok-str">"202608261234567"</span>,
+  <span class="tok-key">"logo_base64"</span>: <span class="tok-muted">null</span>,
+  <span class="tok-key">"recebedor"</span>: {
+    <span class="tok-key">"nome"</span>: <span class="tok-str">"Loja Exemplo LTDA"</span>,
+    <span class="tok-key">"cpf_cnpj"</span>: <span class="tok-str">"23010551000131"</span>,
+    <span class="tok-key">"instituicao"</span>: <span class="tok-str">"Banco Exemplo S.A."</span>
+  },
+  <span class="tok-key">"pagador"</span>: {
+    <span class="tok-key">"nome"</span>: <span class="tok-str">"FULANO DE TAL"</span>,
+    <span class="tok-key">"cpf_cnpj"</span>: <span class="tok-str">"12345678909"</span>,
+    <span class="tok-key">"instituicao"</span>: <span class="tok-str">"ColmeIA Bank"</span>
+  }
+}</code></pre>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Campo</th><th>Tipo</th><th></th><th>Descrição</th></tr></thead>
+            <tbody>
+              <tr>
+                <td class="field-name">valor</td><td class="field-type">number</td>
+                <td><span class="req-flag required">obrigatório</span></td>
+                <td>Valor da transferência. Formatado automaticamente como R$.</td>
+              </tr>
+              <tr>
+                <td class="field-name">recebedor.nome</td><td class="field-type">string</td>
+                <td><span class="req-flag required">obrigatório</span></td>
+                <td>Nome de quem recebe.</td>
+              </tr>
+              <tr>
+                <td class="field-name">pagador.nome</td><td class="field-type">string</td>
+                <td><span class="req-flag required">obrigatório</span></td>
+                <td>Nome de quem paga.</td>
+              </tr>
+              <tr>
+                <td class="field-name">recebedor.cpf_cnpj</td><td class="field-type">string</td>
+                <td><span class="req-flag optional">opcional</span></td>
+                <td>11 dígitos (CPF) ou 14 (CNPJ). Mascarado automaticamente no comprovante.</td>
+              </tr>
+              <tr>
+                <td class="field-name">pagador.cpf_cnpj</td><td class="field-type">string</td>
+                <td><span class="req-flag optional">opcional</span></td>
+                <td>Mesma regra de máscara do recebedor.</td>
+              </tr>
+              <tr>
+                <td class="field-name">recebedor.instituicao</td><td class="field-type">string</td>
+                <td><span class="req-flag optional">opcional</span></td>
+                <td>Texto livre exibido em "Instituição".</td>
+              </tr>
+              <tr>
+                <td class="field-name">pagador.instituicao</td><td class="field-type">string</td>
+                <td><span class="req-flag optional">opcional</span></td>
+                <td>Texto livre exibido em "Instituição".</td>
+              </tr>
+              <tr>
+                <td class="field-name">titulo</td><td class="field-type">string</td>
+                <td><span class="req-flag optional">opcional</span></td>
+                <td>Título acima do valor. Padrão: "Transferência enviada".</td>
+              </tr>
+              <tr>
+                <td class="field-name">protocolo</td><td class="field-type">string</td>
+                <td><span class="req-flag optional">opcional</span></td>
+                <td>Se omitido, a API gera um número aleatório de 15 dígitos.</td>
+              </tr>
+              <tr>
+                <td class="field-name">logo_base64</td><td class="field-type">string</td>
+                <td><span class="req-flag optional">opcional</span></td>
+                <td>PNG em base64 do símbolo. Se omitido, usa <code>public/default-logo.png</code>.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p>Sobre a máscara de documento: 11 dígitos viram <code>***.XXX.XXX-**</code> (CPF); 14 dígitos viram <code>**.XXX.XXX/XXXX-**</code> (CNPJ) — o mesmo padrão usado por bancos reais em comprovantes.</p>
+      </section>
+
+      <section id="campos-automaticos">
+        <h2>Campos automáticos</h2>
+        <p>Estes campos nunca vêm do corpo da requisição — a API sempre os calcula ou fixa sozinha. Se você enviá-los mesmo assim, são ignorados silenciosamente.</p>
+
+        <ul class="hex-list">
+          <li><code>banco_nome</code> / <code>brand_color</code><span class="hint">Sempre "ColmeIA Bank" / #4d4d4d — fixos no código, não configuráveis por request.</span></li>
+          <li><code>data_pagamento</code> / <code>horario</code><span class="hint">Data e hora do instante em que a requisição chega, sempre no fuso America/Sao_Paulo — independente de onde o servidor estiver rodando.</span></li>
+          <li><code>id_transacao</code><span class="hint">Gerado a cada request no mesmo formato de um EndToEndId de Pix ("E" + 8 dígitos + data/hora UTC + 11 caracteres alfanuméricos). Só estética — não corresponde a uma transação real.</span></li>
+        </ul>
+      </section>
+
+      <section id="erros">
+        <h2>Erros de validação</h2>
+        <p>Se <code>valor</code>, <code>recebedor.nome</code> ou <code>pagador.nome</code> estiverem faltando (ou <code>valor</code> não for um número), a API responde <code>400</code> em vez de gerar um comprovante com campos em branco:</p>
+
+        <div class="code-block">
+          <div class="code-label">response 400</div>
+          <pre><code>{
+  <span class="tok-key">"error"</span>: <span class="tok-str">"Dados inválidos no body da requisição"</span>,
+  <span class="tok-key">"details"</span>: [
+    <span class="tok-str">"'valor' é obrigatório"</span>,
+    <span class="tok-str">"'recebedor.nome' é obrigatório"</span>
+  ]
+}</code></pre>
+        </div>
+
+        <p>Um <code>format</code> fora de <code>pdf</code>/<code>png</code>/<code>both</code> também retorna <code>400</code>. Falhas internas ao renderizar (ex.: Chromium indisponível) retornam <code>500</code> com <code>error</code> e <code>detail</code>.</p>
+      </section>
+
+      <section id="respostas">
+        <h2>Formatos de resposta</h2>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>format</th><th>Content-Type</th><th>Corpo</th></tr></thead>
+            <tbody>
+              <tr><td class="field-name">pdf</td><td class="field-type">application/pdf</td><td>Binário do PDF, direto na resposta.</td></tr>
+              <tr><td class="field-name">png</td><td class="field-type">image/png</td><td>Binário do PNG, direto na resposta.</td></tr>
+              <tr><td class="field-name">both</td><td class="field-type">application/json</td><td><code>{ pdf_base64, png_base64 }</code></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section id="estrutura">
+        <h2>Estrutura de arquivos</h2>
+        <div class="tree">
+          <div><span class="fname">server.js</span> <span class="fdesc">— bootstrap: monta o Express, registra rotas, encerramento gracioso</span></div>
+          <div><span class="fname">config.js</span> <span class="fdesc">— constantes e variáveis de ambiente</span></div>
+          <div><span class="dir">lib/</span></div>
+          <div>&nbsp;&nbsp;<span class="fname">format.js</span> <span class="fdesc">— moeda, data/hora, máscara de CPF/CNPJ</span></div>
+          <div>&nbsp;&nbsp;<span class="fname">ids.js</span> <span class="fdesc">— geração de ID de transação e protocolo</span></div>
+          <div>&nbsp;&nbsp;<span class="fname">render.js</span> <span class="fdesc">— monta o HTML final do comprovante</span></div>
+          <div>&nbsp;&nbsp;<span class="fname">browser.js</span> <span class="fdesc">— Chromium headless (Playwright) + geração de PDF/PNG</span></div>
+          <div><span class="dir">routes/</span></div>
+          <div>&nbsp;&nbsp;<span class="fname">comprovante.js</span> <span class="fdesc">— POST /comprovante + validação</span></div>
+          <div>&nbsp;&nbsp;<span class="fname">health.js</span> <span class="fdesc">— GET /health</span></div>
+          <div><span class="dir">scripts/</span></div>
+          <div>&nbsp;&nbsp;<span class="fname">ensure-chromium.js</span> <span class="fdesc">— instala o Chromium se estiver faltando</span></div>
+          <div>&nbsp;&nbsp;<span class="fname">start.js</span> <span class="fdesc">— usado por npm start / npm run dev</span></div>
+          <div><span class="dir">templates/</span><span class="fname">receipt.html</span> <span class="fdesc">— template HTML/CSS do comprovante</span></div>
+          <div><span class="dir">public/</span><span class="fname">default-logo.png</span> <span class="fdesc">— símbolo padrão</span></div>
+        </div>
+      </section>
+
+      <section id="simulacao">
+        <h2>Aviso de simulação</h2>
+        <p>Este projeto existe para simular, em ambiente de teste, o comprovante de um banco — nunca para produzir um documento que possa passar por um comprovante real. Por isso, de propósito:</p>
+        <ul class="hex-list">
+          <li>O nome do banco é sempre fictício ("ColmeIA Bank"), fixo no código.<span class="hint">Não é configurável por request — evita qualquer confusão com uma instituição real.</span></li>
+          <li>Toda página traz uma marca d'água "SIMULAÇÃO" e o selo "DOCUMENTO SIMULADO — SEM VALOR FISCAL OU BANCÁRIO".<span class="hint">Visível em qualquer PDF ou PNG gerado, sem exceção.</span></li>
+          <li>O rodapé identifica que o arquivo foi gerado por um simulador, com data e hora.</li>
+        </ul>
+        <div class="callout warn">
+          <span class="hex-mark">⬡</span>
+          <p>Remover esses avisos para produzir um comprovante que pareça autêntico pode configurar fraude. Este projeto é só para testes internos e demonstrações.</p>
+        </div>
+      </section>
+
+      <footer class="page-foot">
+        Documentação de referência do <strong>comprovante-api</strong> — ColmeIA Bank (simulação). Gerada a partir do código-fonte do projeto.
+      </footer>
+
+    </div>
+  </main>
+</div>
