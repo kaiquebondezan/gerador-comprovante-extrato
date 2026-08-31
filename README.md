@@ -2,7 +2,7 @@
 
 API simples, sem autenticação, que gera comprovantes de transferência **fictícios** em PDF e/ou PNG — pensada para simular o bot de um banco em ambiente de teste/demonstração.
 
-> ⚠️ Importante: os comprovantes gerados trazem, de propósito, o nome de um banco fictício ("ColmeIA Bank"), uma marca d'água "SIMULAÇÃO" e um aviso "DOCUMENTO SIMULADO — SEM VALOR FISCAL OU BANCÁRIO". Isso evita que o resultado seja confundido com um comprovante real de qualquer instituição. Não remova esses avisos para gerar documentos que pareçam autênticos — isso pode configurar fraude.
+> ⚠️ PS: Readme gerado por IA
 
 ## Como rodar
 
